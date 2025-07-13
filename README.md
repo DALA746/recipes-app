@@ -1,7 +1,16 @@
-# Netflix GPT
+# Recipe GPT
 
 - create-react-app
 - configured tailwind css
+- header
+- routing of app
+- login form
+- sign up form
+- form validation
+- useRef hook
+- firebase setup
+- deploying app to production
+- create signup user account
 
 # Features:
 
@@ -20,3 +29,5 @@
 - NetflixGPT
   - search bar
   - movie suggestions
+
+Deploy: https://netflix-gpt-70995.web.app

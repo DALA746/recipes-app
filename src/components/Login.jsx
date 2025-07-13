@@ -1,24 +1,93 @@
 import React, { useState, useRef } from 'react';
 import Header from './Header';
 import { checkValidData } from '../utils/validate';
+import { useNavigate } from 'react-router-dom';
+import { auth } from '../utils/firebase';
+import { useDispatch } from 'react-redux';
+import { addUser } from '../utils/userSlice';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile
+} from 'firebase/auth';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isSignInForm, setIsSignInForm] = useState(true);
+  const [errMessage, setErrMessage] = useState(null);
   const email = useRef(null);
   const password = useRef(null);
-  const [errMessage, setErrMessage] = useState(null);
+  const username = useRef(null);
 
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
   };
 
-  const handleButtonClick = (e) => {
+  const handleButtonClick = async (e) => {
     e.preventDefault();
     // Validate form
-    const errorMsg = checkValidData(email, password);
+    const errorMsg = checkValidData(
+      email.current.value,
+      password.current.value,
+      !isSignInForm ? username.current.value : null
+    );
     setErrMessage(errorMsg);
+    // to not write all logic in if condition
+    if (errorMsg) {
+      return;
+    }
 
-    // sign in / sign up
+    if (!isSignInForm) {
+      // code for sign up
+      try {
+        const createUser = await createUserWithEmailAndPassword(
+          auth,
+          email.current.value,
+          password.current.value
+        );
+        const user = createUser.user;
+        console.log(user, 'user object');
+        updateProfile(user, {
+          displayName: username.current.value,
+          photoURL: 'https://placecats.com/100/100'
+        })
+          .then(() => {
+            // Profile updated!
+            const { uid, email, displayName, photoURL } = auth.currentUser;
+            dispatch(addUser({ uid, email, displayName, photoURL }));
+
+            navigate('/browse');
+            // ...
+          })
+          .catch((error) => {
+            // An error occurred
+            // ...
+            setErrMessage(error);
+          });
+      } catch (error) {
+        setErrMessage(error.code + '-' + error.message);
+        console.log(
+          `ErrorCode: ${error.code} and errorMessage: ${error.message}`
+        );
+      }
+    } else {
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email.current.value,
+          password.current.value
+        );
+        const user = userCredential.user;
+        navigate('/browse');
+        console.log(user, 'signed in existing user');
+      } catch (error) {
+        setErrMessage(error.code + '-' + error.message);
+        console.log(
+          `ErrorCode: ${error.code} and errorMessage: ${error.message}`
+        );
+      }
+    }
   };
 
   return (
@@ -30,7 +99,12 @@ const Login = () => {
             {isSignInForm ? 'Sign in' : 'Sign up'}
           </h1>
           {!isSignInForm && (
-            <input className="p-2 w-full" type="text" placeholder="Username" />
+            <input
+              className="p-2 w-full"
+              type="text"
+              placeholder="Username"
+              ref={username}
+            />
           )}
 
           <input
