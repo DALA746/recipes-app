@@ -1,10 +1,9 @@
 import React, { useState, useRef } from 'react';
-import Header from './Header';
 import { checkValidData } from '../utils/validate';
-import { useNavigate } from 'react-router-dom';
 import { auth } from '../utils/firebase';
 import { useDispatch } from 'react-redux';
-import { addUser } from '../utils/userSlice';
+import { addUser } from '../utils/store/userSlice';
+import { FALLBACK_LOGO } from '../utils/constants';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -12,7 +11,6 @@ import {
 } from 'firebase/auth';
 
 const Login = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errMessage, setErrMessage] = useState(null);
@@ -50,14 +48,12 @@ const Login = () => {
         console.log(user, 'user object');
         updateProfile(user, {
           displayName: username.current.value,
-          photoURL: 'https://placecats.com/100/100'
+          photoURL: FALLBACK_LOGO
         })
           .then(() => {
             // Profile updated!
             const { uid, email, displayName, photoURL } = auth.currentUser;
             dispatch(addUser({ uid, email, displayName, photoURL }));
-
-            navigate('/browse');
             // ...
           })
           .catch((error) => {
@@ -79,7 +75,6 @@ const Login = () => {
           password.current.value
         );
         const user = userCredential.user;
-        navigate('/browse');
         console.log(user, 'signed in existing user');
       } catch (error) {
         setErrMessage(error.code + '-' + error.message);
@@ -92,7 +87,6 @@ const Login = () => {
 
   return (
     <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-screen w-full">
-      <Header />
       <div className="flex items-center justify-center bg-opacity-15">
         <form className="bg-black bg-opacity-10 w-1/2 p-6 flex flex-col justify-center items-center gap-4">
           <h1 className="text-start text-3xl font-bold text-white">

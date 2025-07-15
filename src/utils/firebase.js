@@ -2,12 +2,12 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCdFfaxmZrXTrSKabwmKqK9I2byeI0M8wo', // TODO: add to .env file
-  authDomain: 'recipe-gpt-1f07b.firebaseapp.com',
-  projectId: 'recipe-gpt-1f07b',
-  storageBucket: 'recipe-gpt-1f07b.firebasestorage.app',
-  messagingSenderId: '361252201777',
-  appId: '1:361252201777:web:558a79b63b409c32db3c10'
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
 initializeApp(firebaseConfig);

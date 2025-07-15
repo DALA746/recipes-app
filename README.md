@@ -1,5 +1,10 @@
 # Recipe GPT
 
+// todo:
+
+- change name of repo and name of folder
+- build netflix a like page but with recipe
+
 - create-react-app
 - configured tailwind css
 - header

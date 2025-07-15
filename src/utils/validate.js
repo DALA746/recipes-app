@@ -1,5 +1,4 @@
 export const checkValidData = (email, password, username) => {
-  console.log(password);
   const emailPattern = /^[^@]+@[^@]+\.[^@]+$/;
   // Minimum eight characters, at least one letter and one number
   const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;

@@ -1,46 +1,48 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// import { Provider } from 'react-redux';
-// import appStore from './utils/appStore';
 import './index.css';
 import { useEffect } from 'react';
-import Login from './components/Login';
-import Browse from './components/Browse';
-import { createBrowserRouter } from 'react-router-dom';
-import { RouterProvider } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { auth } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
-import { addUser, removeUser } from './utils/userSlice';
+import { addUser, removeUser } from './utils/store/userSlice';
+import Login from './pages/Login';
+import Browse from './pages/Browse';
+import NotFound from './pages/NotFound';
+import { Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import RecipeDetails from './pages/RecipeDetails';
 
 function App() {
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
-  const appRouter = createBrowserRouter([
-    {
-      path: '/',
-      element: <Login />
-    },
-    {
-      path: '/browse',
-      element: <Browse />
-    }
-  ]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubsribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid, email, displayName, photoURL } = user;
         dispatch(addUser({ uid, email, displayName, photoURL }));
         // navigate('/browse');
       } else {
-        // User is signed out
         dispatch(removeUser());
-        // navigate('/');
+        navigate('/');
       }
     });
+    // Unsubscribe when component unmounts
+    return () => unsubsribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <RouterProvider router={appRouter} />;
+  return (
+    <div>
+      <Header />
+      <Routes>
+        <Route exact path="/" element={<Login />} />
+        <Route exact path="/browse" element={<Browse />} />
+        <Route exact path="/browse/:id" element={<RecipeDetails />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </div>
+  );
 }
 
 export default App;
