@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const Header = () => {
   const user = useSelector((store) => store.user);
   return (
-    <div className="w-full p-3 flex justify-between items-center gap-3 bg-slate-800">
+    <div className="w-full p-3 flex justify-between items-center gap-3 border border-b-2 bg-slate-100 ">
       <Link to={'/browse'}>
         <span className="text-red-400 font-bold text-2xl">Recipe GPT</span>
       </Link>
@@ -16,7 +16,7 @@ const Header = () => {
             src={user.photoURL}
             alt={user.displayName}
           />
-          <span className="text-white">{user.displayName}</span>
+          <span className="text-slate-900">{user.displayName}</span>
           <SignOutBtn />
         </div>
       )}
