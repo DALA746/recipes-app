@@ -3,12 +3,18 @@ import { checkValidData } from '../utils/validate';
 import { auth } from '../utils/firebase';
 import { useDispatch } from 'react-redux';
 import { addUser } from '../utils/store/userSlice';
-import { FALLBACK_LOGO } from '../utils/constants';
+import { FcGoogle } from 'react-icons/fc';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  updateProfile
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup
 } from 'firebase/auth';
+import { setUsersFavoritesToFirebase } from '../utils/firebaseHelpers';
+
+const provider = new GoogleAuthProvider();
+provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -22,22 +28,34 @@ const Login = () => {
     setIsSignInForm(!isSignInForm);
   };
 
+  const googleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+
+      setUsersFavoritesToFirebase(auth.currentUser.uid);
+      dispatch(addUser({ uid: auth.currentUser.uid }));
+    } catch (error) {
+      console.error(error);
+      GoogleAuthProvider.credentialFromError(error);
+    }
+  };
+
   const handleButtonClick = async (e) => {
     e.preventDefault();
-    // Validate form
+
     const errorMsg = checkValidData(
       email.current.value,
       password.current.value,
       !isSignInForm ? username.current.value : null
     );
     setErrMessage(errorMsg);
-    // to not write all logic in if condition
+
     if (errorMsg) {
       return;
     }
 
     if (!isSignInForm) {
-      // code for sign up
       try {
         const createUser = await createUserWithEmailAndPassword(
           auth,
@@ -45,22 +63,12 @@ const Login = () => {
           password.current.value
         );
         const user = createUser.user;
-        console.log(user, 'user object');
-        updateProfile(user, {
-          displayName: username.current.value,
-          photoURL: FALLBACK_LOGO
-        })
-          .then(() => {
-            // Profile updated!
-            const { uid, email, displayName, photoURL } = auth.currentUser;
-            dispatch(addUser({ uid, email, displayName, photoURL }));
-            // ...
-          })
-          .catch((error) => {
-            // An error occurred
-            // ...
-            setErrMessage(error);
-          });
+        await updateProfile(user, {
+          displayName: username.current.value
+        });
+
+        setUsersFavoritesToFirebase(user.uid);
+        dispatch(addUser(auth.currentUser));
       } catch (error) {
         setErrMessage(error.code + '-' + error.message);
         console.log(
@@ -74,6 +82,7 @@ const Login = () => {
           email.current.value,
           password.current.value
         );
+
         const user = userCredential.user;
         console.log(user, 'signed in existing user');
       } catch (error) {
@@ -86,15 +95,15 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-screen w-full">
-      <div className="flex items-center justify-center bg-opacity-15">
-        <form className="bg-black bg-opacity-10 w-1/2 p-6 flex flex-col justify-center items-center gap-4">
+    <div className="bg-gradient-to-r h-screen w-full bg-slate-900 text-white">
+      <div className="flex flex-col items-center justify-center">
+        <form className="p-6 flex flex-col justify-center items-center gap-4 w-full max-w-[500px] text-slate-900">
           <h1 className="text-start text-3xl font-bold text-white">
             {isSignInForm ? 'Sign in' : 'Sign up'}
           </h1>
           {!isSignInForm && (
             <input
-              className="p-2 w-full"
+              className="p-2 w-full rounded-lg "
               type="text"
               placeholder="Username"
               ref={username}
@@ -103,30 +112,37 @@ const Login = () => {
 
           <input
             ref={email}
-            className="p-2 w-full"
+            className="p-2 w-full rounded-lg"
             type="text"
             placeholder="Email"
           />
           <input
             ref={password}
-            className="p-2 w-full"
+            className="p-2 w-full rounded-lg"
             type="text"
             placeholder="Password"
           />
           <p className="text-red-500 font-bold p-2">{errMessage}</p>
           <button
             onClick={(e) => handleButtonClick(e)}
-            className="p-2 m-2 bg-red-600 rounded w-full text-white">
+            className="p-2 m-2 bg-red-600 rounded-lg w-full text-white">
             {isSignInForm ? 'Sign in' : 'Sign up'}
           </button>
           <h2
             className="text-white text-center font-bold cursor-pointer"
             onClick={toggleSignInForm}>
             {isSignInForm
-              ? 'Are you new to Netflix? Sign up now!'
-              : 'Already a reistered? Sign in!'}
+              ? `Don't have account? Sign up now!`
+              : 'Already registered? Sign in!'}
           </h2>
         </form>
+        <button
+          onClick={googleSignIn}
+          className="bg-white text-slate-900 flex flex-row items-center gap-2 p-2 rounded-lg">
+          <span>Sign in with Google</span>
+
+          <FcGoogle size={25} />
+        </button>
       </div>
     </div>
   );

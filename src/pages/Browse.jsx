@@ -9,8 +9,6 @@ const Browse = () => {
   useCategoriesList();
   const recipes = useSelector((store) => store.recipes.recipesData);
   const categories = useSelector((store) => store.recipes.categories);
-  const favorites = useSelector((store) => store.user);
-  console.log(favorites, 'favorites');
 
   if (!recipes) {
     return null;

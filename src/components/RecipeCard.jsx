@@ -1,23 +1,45 @@
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { addFavorite } from '../utils/store/userSlice';
+import { addFavorite, removeFavorite } from '../utils/store/favoritesSlice';
+import { useSelector } from 'react-redux';
+import {
+  addFavoriteToFirebase,
+  removeFavoriteFromFirebase
+} from '../utils/firebaseHelpers';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 
 const RecipeCard = ({ recipe }) => {
   const dispatch = useDispatch();
   const { idMeal, strMealThumb, strMeal } = recipe;
 
-  // const addFavorites = () => {
-  //   console.log('add favorite');
-  //   dispatch(addFavorite(recipe));
-  // };
+  const user = useSelector((state) => state.user);
+  const favorites = useSelector((state) => state.favorites);
+
+  const isFavorited =
+    favorites && favorites?.items?.some((recipe) => recipe.idMeal === idMeal);
+
+  const handleClick = async () => {
+    if (isFavorited) {
+      await removeFavoriteFromFirebase(user.uid, recipe);
+      dispatch(removeFavorite(recipe));
+    } else {
+      await addFavoriteToFirebase(user.uid, recipe);
+      dispatch(addFavorite(recipe));
+    }
+  };
 
   return (
     <div className="border relative rounded-lg overflow-hidden">
-      {/* <button
-        onClick={() => addFavorites()}
+      <button
+        onClick={handleClick}
         className="absolute top-0 bg-slate-100 p-2 z-50">
-        Add favorite
-      </button> */}
+        {isFavorited ? (
+          <FaHeart size={20} className="text-red-500" />
+        ) : (
+          <FaRegHeart size={20} />
+        )}
+      </button>
+
       <Link to={`/browse/${idMeal}`}>
         <div className="w-full h-full">
           <img

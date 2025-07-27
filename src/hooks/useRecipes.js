@@ -3,14 +3,14 @@ import { useEffect, useState } from 'react';
 import { BASE_URL } from '../utils/constants';
 
 const useRecipes = (id) => {
-  const [recipes, setrRecipes] = useState([]);
+  const [recipes, setRecipes] = useState([]);
 
   const fetchRecipes = async () => {
     const response = await fetch(`${BASE_URL}/filter.php?c=${id}`);
     const data = await response.json();
 
     if (data) {
-      setrRecipes(data.meals);
+      setRecipes(data.meals);
     }
   };
 

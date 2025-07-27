@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
 
 const CookingSteps = ({ instructions }) => {
   const ref = useRef();
@@ -9,7 +10,6 @@ const CookingSteps = ({ instructions }) => {
     setExpanded((prev) => !prev);
   };
 
-  // console.log(ref.current.scrollHeight, 'scroll h');
   useEffect(() => {
     if (ref.current) {
       setContentHeight(ref.current.scrollHeight);
@@ -23,7 +23,7 @@ const CookingSteps = ({ instructions }) => {
         <div
           className="bg-slate-100 rounded-xl overflow-hidden transition-all duration-300"
           ref={ref}
-          style={{ height: expanded ? contentHeight : 300 }}>
+          style={{ height: expanded ? contentHeight : 200 }}>
           {instructions.split('\r\n').map(
             (line, index) =>
               line && (
@@ -37,7 +37,7 @@ const CookingSteps = ({ instructions }) => {
         </div>
         {contentHeight > 300 && (
           <button className="px-4 py-2 rounded mt-2 " onClick={toggleShow}>
-            {expanded ? 'Show less' : 'Show more'}
+            {expanded ? <BsChevronUp size={20} /> : <BsChevronDown size={20} />}
           </button>
         )}
       </div>
