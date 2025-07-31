@@ -12,6 +12,8 @@ import {
   signInWithPopup
 } from 'firebase/auth';
 import { setUsersFavoritesToFirebase } from '../utils/firebaseHelpers';
+import { db } from '../utils/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 const provider = new GoogleAuthProvider();
 provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
@@ -31,10 +33,15 @@ const Login = () => {
   const googleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      const credential = GoogleAuthProvider.credentialFromResult(result);
+      GoogleAuthProvider.credentialFromResult(result);
 
-      setUsersFavoritesToFirebase(auth.currentUser.uid);
-      dispatch(addUser({ uid: auth.currentUser.uid }));
+      const querySnapshot = await getDocs(collection(db, 'users'));
+      querySnapshot.forEach((doc) => {
+        if (!doc.id === result.user.uid) {
+          setUsersFavoritesToFirebase(result.user.uid);
+          dispatch(addUser({ uid: auth.currentUser.uid }));
+        }
+      });
     } catch (error) {
       console.error(error);
       GoogleAuthProvider.credentialFromError(error);
@@ -118,11 +125,13 @@ const Login = () => {
           />
           <input
             ref={password}
+            type="password"
             className="p-2 w-full rounded-lg"
-            type="text"
             placeholder="Password"
           />
-          <p className="text-red-500 font-bold p-2">{errMessage}</p>
+          {errMessage && (
+            <p className="text-red-500 font-bold p-2">{errMessage}</p>
+          )}
           <button
             onClick={(e) => handleButtonClick(e)}
             className="p-2 m-2 bg-red-600 rounded-lg w-full text-white">
@@ -140,7 +149,6 @@ const Login = () => {
           onClick={googleSignIn}
           className="bg-white text-slate-900 flex flex-row items-center gap-2 p-2 rounded-lg">
           <span>Sign in with Google</span>
-
           <FcGoogle size={25} />
         </button>
       </div>

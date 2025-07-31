@@ -10,6 +10,7 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 
 const RecipeCard = ({ recipe }) => {
   const dispatch = useDispatch();
+
   const { idMeal, strMealThumb, strMeal } = recipe;
 
   const user = useSelector((state) => state.user);
@@ -32,7 +33,7 @@ const RecipeCard = ({ recipe }) => {
     <div className="border relative rounded-lg overflow-hidden">
       <button
         onClick={handleClick}
-        className="absolute top-0 bg-slate-100 p-2 z-50">
+        className="absolute top-0 bg-slate-100 p-2 z-30">
         {isFavorited ? (
           <FaHeart size={20} className="text-red-500" />
         ) : (

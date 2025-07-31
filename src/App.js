@@ -8,6 +8,7 @@ import { addUser, removeUser } from './utils/store/userSlice';
 import Login from './pages/Login';
 import Browse from './pages/Browse';
 import NotFound from './pages/NotFound';
+import AreaList from './pages/AreaList';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import RecipeDetails from './pages/RecipeDetails';
@@ -16,12 +17,16 @@ import UserFavorites from './pages/UserFavorites';
 import { useSelector } from 'react-redux';
 import { getUserFavoritesData } from './utils/firebaseHelpers';
 import { setFavorites } from './utils/store/favoritesSlice';
+import useRecipeList from './hooks/useRecipeList';
+import useCategoriesList from './hooks/useCategoriesList';
 
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const user = useSelector((state) => state.user);
+  useRecipeList();
+  useCategoriesList();
 
   useEffect(() => {
     const unsubsribe = onAuthStateChanged(auth, async (user) => {
@@ -60,6 +65,7 @@ function App() {
         <Route exact path="/browse" element={<Browse />} />
         <Route exact path="/browse/:id" element={<RecipeDetails />} />
         <Route exact path="/browse/list/:id" element={<List />} />
+        <Route exact path="/browse/area-list/:areaId" element={<AreaList />} />
         <Route exact path="/favorites" element={<UserFavorites />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

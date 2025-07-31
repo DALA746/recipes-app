@@ -8,13 +8,17 @@ const ShortRecipeList = ({ recipes, categoryTitle }) => {
   return (
     <section className="flex flex-col gap-4 my-4">
       <div className="flex justify-between">
-        <h2 className="text-2xl font-bold">{categoryTitle}</h2>
-        <Link
-          to={`/browse/list/${categoryTitle}`}
-          className="flex items-center gap-1">
-          <span className="font-bold">More</span>
-          <SlArrowRight size={16} className="font-bold" />
-        </Link>
+        {categoryTitle && (
+          <>
+            <h2 className="text-2xl font-bold">{categoryTitle}</h2>
+            <Link
+              to={`/browse/list/${categoryTitle}`}
+              className="flex items-center gap-1">
+              <span className="font-bold">More</span>
+              <SlArrowRight size={16} className="font-bold" />
+            </Link>
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">

@@ -1,12 +1,8 @@
-import useRecipeList from '../hooks/useRecipeList';
 import { useSelector } from 'react-redux';
 import ShortRecipeList from '../components/ShortRecipeList';
 import CategoriesList from '../components/CategoriesList';
-import useCategoriesList from '../hooks/useCategoriesList';
 
 const Browse = () => {
-  useRecipeList();
-  useCategoriesList();
   const recipes = useSelector((store) => store.recipes.recipesData);
   const categories = useSelector((store) => store.recipes.categories);
 

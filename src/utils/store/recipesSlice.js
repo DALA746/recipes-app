@@ -4,7 +4,7 @@ const recipesSlice = createSlice({
   name: 'recipes',
   initialState: {
     recipesData: [],
-    categories: null
+    categories: []
   },
   reducers: {
     addRecipes: (state, action) => {

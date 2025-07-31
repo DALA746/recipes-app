@@ -2,6 +2,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../utils/firebase';
 import { useDispatch } from 'react-redux';
 import { removeUser } from '../utils/store/userSlice';
+import { MdOutlineLogout } from 'react-icons/md';
 
 const SignOutBtn = () => {
   const dispatch = useDispatch();
@@ -16,9 +17,10 @@ const SignOutBtn = () => {
   };
   return (
     <button
-      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+      className="bg-red-500 flex items-center gap-2 text-white px-4 py-2 rounded hover:bg-red-600"
       onClick={handleSignOut}>
-      Sign Out
+      <span>Sign out</span>
+      <MdOutlineLogout size={20} />
     </button>
   );
 };
