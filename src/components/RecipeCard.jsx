@@ -41,7 +41,7 @@ const RecipeCard = ({ recipe }) => {
         )}
       </button>
 
-      <Link to={`/browse/${idMeal}`}>
+      <Link to={`/browse/${idMeal}`} reloadDocument>
         <div className="w-full h-full">
           <img
             className="w-full h-full object-cover overflow-hidden"
