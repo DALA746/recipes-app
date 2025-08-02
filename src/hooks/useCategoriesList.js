@@ -20,7 +20,6 @@ const useCategoriesList = () => {
       try {
         const response = await fetch(`${BASE_URL}/categories.php`);
         const data = await response.json();
-        console.log(data, 'data---------------------------------------');
 
         const filteredCategories = data.categories.filter(({ strCategory }) =>
           categories.includes(strCategory)
